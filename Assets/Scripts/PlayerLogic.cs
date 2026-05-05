@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,6 +13,10 @@ public class PlayerLogic : MonoBehaviour
     int stompStocks = 300;
     int fragments;
     int health;
+    bool invincible = false;
+    public TextMeshProUGUI Health;
+    public TextMeshProUGUI Fragments;
+    public TextMeshProUGUI Stocks;
     public float dashForce = 50f;
     public float dashTime = .15f;
     public float stompForce = 20f;
@@ -21,6 +26,9 @@ public class PlayerLogic : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         fragments = 0;
         health = 3;
+        setHealth();
+        setFragments();
+        setStocks();
     }
 
     void Update()
@@ -35,6 +43,7 @@ public class PlayerLogic : MonoBehaviour
             {
                 extraJump(rb);
                 jumpStocks--;
+                setStocks();
             }  
         }
 
@@ -48,6 +57,7 @@ public class PlayerLogic : MonoBehaviour
             {
                 dash(rb);
                 dashStocks--;
+                setStocks();
             }
         }
 
@@ -61,6 +71,7 @@ public class PlayerLogic : MonoBehaviour
             {
                 stomp(rb);
                 stompStocks--;
+                setStocks();
             }
         }
     }
@@ -71,7 +82,7 @@ public class PlayerLogic : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             fragments += 1;
-            print("touching pickup");
+            setFragments();
         }
     }
     // Extra jump logic
@@ -98,7 +109,13 @@ public class PlayerLogic : MonoBehaviour
 
         rb.useGravity = false;
 
-        yield return new WaitForSeconds(dashTime);
+        float elapsed = 0f;
+        while (elapsed < dashTime)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
 
         rb.useGravity = true;
     }
@@ -111,5 +128,19 @@ public class PlayerLogic : MonoBehaviour
         rb.AddForce(Vector3.down * stompForce, ForceMode.Impulse);
     }
 
- 
+
+    void setHealth()
+    {
+        Health.text = "Health: " + health.ToString();
+    }
+
+    void setFragments()
+    {
+        Fragments.text = "Fragments: " + fragments.ToString();
+    }
+
+    void setStocks()
+    {
+            Stocks.text = "Jump Stocks: " + jumpStocks.ToString() + "\nDash Stocks: " + dashStocks.ToString() + "\nStomp Stocks: " + stompStocks.ToString();
+    }
 }
