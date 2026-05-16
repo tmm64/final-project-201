@@ -9,6 +9,7 @@ public class PlayerLogic : MonoBehaviour
     // Jump will be a basic jump
     //Stomp is uhhhh basically the dash logic but downwards.
     private Rigidbody rb;
+    public GameObject finishLevel;
     public int jumpStocks;
     public int dashStocks;
     public int stompStocks;
@@ -24,6 +25,7 @@ public class PlayerLogic : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Time.timeScale = 1f;
         rb = GetComponent<Rigidbody>();
         fragments = 0;
         health = 3;
@@ -33,6 +35,7 @@ public class PlayerLogic : MonoBehaviour
         setHealth();
         setFragments();
         setStocks();
+        finishLevel.SetActive(false);
     }
 
     void Update()
@@ -109,13 +112,22 @@ public class PlayerLogic : MonoBehaviour
             }
             
         }
+        if(other.CompareTag("DeadZone"))
+        {
+            health = 0;
+            setHealth();
+        }   
+        if (other.CompareTag("Finish"))
+        {
+            levelFinished();
+        }
     }
     // Extra jump logic
     void extraJump(Rigidbody rb)
    {
         
         rb.AddForce(Vector3.up * 100 * 4);
-    }
+   }
    // Dash logic
    void dash(Rigidbody rb)
    {
@@ -187,5 +199,17 @@ public class PlayerLogic : MonoBehaviour
     public void setStocks()
     {
             Stocks.text = "Jump Stocks: " + jumpStocks.ToString() + "\nDash Stocks: " + dashStocks.ToString() + "\nStomp Stocks: " + stompStocks.ToString();
+    }
+
+    public void levelFinished()
+    {
+        Time.timeScale = 0f;
+        finishLevel.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+    public void Respawn()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

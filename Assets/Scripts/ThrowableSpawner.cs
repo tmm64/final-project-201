@@ -3,7 +3,7 @@ using UnityEngine;
 public class WanderSpawner : MonoBehaviour
 {
     public GameObject prefab;
-    public float spawnDist = 5f;
+    public float spawnDist = 2f;
  
     // Update is called once per frame
     void Update()
